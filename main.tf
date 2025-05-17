@@ -44,7 +44,15 @@ resource "aws_route53_record" "record" {
 
 resource "null_resource" "provisioner" {
   depends_on = [aws_route53_record.record]
-  provisioner "local-exec" {
-    command = "sleep 120; cd /home/ec2-user/expense-shell; ansible-playbook -i ${aws_instance.node.private_ip}, -e ansible_user=ec2-user -e ansible_password=DevOps321 -e role_name=${var.name} -e env=dev expense.yml"
+
+  connection {
+    host     = aws_instance.node.private_ip
+    type     = "ssh"
+    user     = "ec2-user"
+    password = "DevOps321"
+  }
+  provisioner "remote-exec" {
+    inline= ["sudo labauto ansible",
+    "ansible-pull -i localhost, -U https://github.com/spatil-Devops/expense-shell.git -e role_name=${var.name} -e env=${var.env} expense.yml"]
   }
 }
