@@ -49,10 +49,10 @@ resource "null_resource" "provisioner" {
     host     = aws_instance.node.private_ip
     type     = "ssh"
     user     = "ec2-user"
-    password = "DevOps321"
+    password = var.SSH_PASSWORD
   }
   provisioner "remote-exec" {
     inline= ["sudo labauto ansible",
-    "ansible-pull -i localhost, -U https://github.com/spatil-Devops/expense-shell.git -e role_name=${var.name} -e env=${var.env} expense.yml"]
+    "ansible-pull -i localhost, -U https://github.com/spatil-Devops/expense-shell.git -e role_name=${var.name} -e env=${var.env} -e vault_token=${var.vault_token} expense.yml"]
   }
 }
