@@ -16,6 +16,13 @@ resource "aws_security_group" "allow_all" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = var.prometheus_servers
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -32,10 +39,17 @@ resource "aws_instance" "node" {
   tags = {
     Name = "${var.name}-${var.env}"
   }
+
+  # this is not to recreate machines when run again and again
+  lifecycle {
+    ignore_changes = [
+      "ami"
+    ]
+  }
 }
 
 resource "aws_route53_record" "record" {
-  zone_id = data.aws_route53_zone.zone.zone_id
+  zone_id = var.zone_id
   name    = "${var.name}-${var.env}.sdevopsp25.site"
   type    = "A"
   ttl     = 30
@@ -45,6 +59,10 @@ resource "aws_route53_record" "record" {
 resource "null_resource" "provisioner" {
   depends_on = [aws_route53_record.record]
 
+  # Trigger this null resource when the id changes
+  triggers = {
+    instance_id = aws_instance.node.id
+  }
   connection {
     host     = aws_instance.node.private_ip
     type     = "ssh"
