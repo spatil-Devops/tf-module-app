@@ -44,11 +44,11 @@ resource "aws_instance" "node" {
   }
 
   # this is not to recreate machines when run again and again
-  # lifecycle {
-  #   ignore_changes = [
-  #     "ami"
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      "ami"
+    ]
+  }
 }
 
 resource "aws_route53_record" "record" {
