@@ -38,6 +38,9 @@ resource "aws_instance" "node" {
 
   tags = {
     Name = "${var.name}-${var.env}"
+    Monitor = "yes"
+    Env = var.env
+    Component = var.name
   }
 
   # this is not to recreate machines when run again and again
