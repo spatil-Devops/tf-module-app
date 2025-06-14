@@ -1,13 +1,6 @@
-data "aws_route53_zone" "zone" {
+data "aws_route53_zone" "main" {
   name         = "sdevopsp25.site"
   private_zone = false
-}
-
-data "aws_security_group" "allow-all" {
-  filter {
-    name = "group-name"
-    values = ["allow-all"]
-  }
 }
 
 data "aws_ami" "ami" {
