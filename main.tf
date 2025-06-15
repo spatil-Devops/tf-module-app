@@ -31,6 +31,16 @@ resource "aws_security_group" "allow_all" {
   }
 }
 
+resource "aws_security_group_rule" "main" {
+  count             = var.name == "frontend" ? 1 : 0
+  type              = "ingress"
+  from_port         = 9113
+  to_port           = 9113
+  protocol          = "tcp"
+  cidr_blocks       = var.prometheus_servers
+  security_group_id = aws_security_group.allow_all.id
+}
+
 resource "aws_instance" "node" {
   ami           = data.aws_ami.ami.image_id
   instance_type = var.instance_type
