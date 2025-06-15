@@ -1,4 +1,4 @@
-resource "aws_security_group" "main" {
+resource "aws_security_group" "allow_all" {
   name        = "${var.name}-${var.env}"
   description = "${var.name}-${var.env}"
 
@@ -38,7 +38,7 @@ resource "aws_security_group_rule" "nginx-exporter-port" {
   to_port           = 9113
   protocol          = "tcp"
   cidr_blocks       = var.prometheus_servers
-  security_group_id = aws_security_group.main.id
+  security_group_id = aws_security_group.allow_all.id
 }
 
 resource "aws_security_group_rule" "grok-exporter-port" {
@@ -48,13 +48,13 @@ resource "aws_security_group_rule" "grok-exporter-port" {
   to_port           = 9144
   protocol          = "tcp"
   cidr_blocks       = var.prometheus_servers
-  security_group_id = aws_security_group.main.id
+  security_group_id = aws_security_group.allow_all.id
 }
 
 resource "aws_instance" "node" {
   ami           = data.aws_ami.ami.image_id
   instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.main.id]
+  vpc_security_group_ids = [aws_security_group.allow_all.id]
 
   tags = {
     Name = "${var.name}-${var.env}"
